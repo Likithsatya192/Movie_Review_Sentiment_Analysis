@@ -4,7 +4,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s:')
 
-project_name = "sentiment-analysis"
+project_name = "sentimentAnalysis"
 
 list_of_files = [
     ".github/workflows/.gitkeep",
