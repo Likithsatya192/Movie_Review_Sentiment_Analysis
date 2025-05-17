@@ -1,0 +1,12 @@
+tensorflow
+pandas 
+numpy 
+scikit-learn
+flask
+nltk
+tqdm
+matplotlib
+scikeras
+ipykernel
+python-box
+-e .
