@@ -9,4 +9,5 @@ matplotlib
 scikeras
 ipykernel
 python-box
+seaborn
 -e .
