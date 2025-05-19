@@ -10,4 +10,4 @@ scikeras
 ipykernel
 python-box
 seaborn
--e .
+pyyaml

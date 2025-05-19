@@ -1,28 +1,25 @@
-import setuptools
+from setuptools import setup, find_packages
+import os
 
-with open("README.md", "r", encoding="utf-8") as f:
-    long_description = f.read()
+# Read requirements.txt for dependencies
+with open('requirements.txt') as f:
+    requirements = [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
+# Read README.md for long_description if available
+long_description = ''
+if os.path.exists('README.md'):
+    with open('README.md', encoding='utf-8') as f:
+        long_description = f.read()
 
-__version__ = "0.0.0"
-
-REPO_NAME = "Movie_Review_Sentiment_Analysis"
-AUTHOR_USER_NAME = "Likithsatya192"
-SRC_REPO = "sentiment-analysis"
-AUTHOR_EMAIL = "likithsatya192@gmail.com"
-
-setuptools.setup(
-    name = SRC_REPO,
-    version = __version__,
-    author=AUTHOR_USER_NAME,
-    author_email=AUTHOR_EMAIL,
-    description="A small python package for Movie Review Sentiment Analysis",
+setup(
+    name='sentimentAnalysis',
+    version='1.0.0',
+    description='End-to-End Movie Review Sentiment Analysis with Flask UI',
     long_description=long_description,
-    long_description_content="text/markdown",
-    url=f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}",
-    project_urls={
-        "Bug Tracker": f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}/issues",
-    },
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src")
+    long_description_content_type='text/markdown',
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
+    include_package_data=True,
+    install_requires=requirements,
+    python_requires='>=3.8',
 )
