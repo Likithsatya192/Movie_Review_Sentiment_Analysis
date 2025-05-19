@@ -1,1 +1,148 @@
-key: value
+# Base parameters
+base:
+  project_name: movie_reviews_sentiment_analysis
+  random_seed: 42
+  target_column: sentiment
+  text_column: text
+
+# Data parameters
+data:
+  test_size: 0.2
+  stratify: true
+  shuffle: true
+
+# Preprocessing parameters
+preprocessing:
+  max_features: 10000
+  max_len: 200
+  padding: post
+  truncating: post
+  oov_token: "<OOV>"
+
+# Model parameters
+model:
+  model_type: lstm  # Options: lstm, bi-lstm, gru
+  embedding_dim: 100
+  batch_size: 64
+  epochs: 20
+  learning_rate: 1e-4
+  optimizer: adam
+  loss: binary_crossentropy
+  metrics:
+    - accuracy
+
+# Callbacks
+callbacks:
+  tensorboard_log_dir: ./logs
+  early_stopping_patience: 5
+
+# Evaluation
+threshold: 0.5
+
+# Data preprocessing parameters
+preprocessing:
+  max_features: 10000
+  max_length: 200
+  truncation: true
+  padding: post
+  lowercase: true
+  remove_punctuation: true
+  remove_stopwords: false
+  stemming: false
+  lemmatization: false
+  special_tokens:
+    pad_token: "[PAD]"
+    unk_token: "[UNK]"
+    cls_token: "[CLS]"
+    sep_token: "[SEP]"
+    mask_token: "[MASK]"
+
+# Model parameters
+model:
+  architecture: lstm  # Options: lstm, bi-lstm, gru
+  embedding_pretrained: true
+  hidden_size: 128
+  num_layers: 2
+  bidirectional: false
+  dropout_rate: 0.3
+  output_size: 1
+  activation: sigmoid
+
+# Training parameters
+training:
+  batch_size: 32
+  num_epochs: 10
+  learning_rate: 1e-4
+  optimizer: adam
+  weight_decay: 1e-5
+  gradient_clipping: 1.0
+  early_stopping_patience: 3
+  scheduler: reduce_on_plateau
+  scheduler_patience: 2
+  scheduler_factor: 0.5
+  loss_function: binary_crossentropy
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+
+# Evaluation parameters
+evaluation:
+  batch_size: 64
+  metrics:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - roc_auc
+  threshold: 0.5
+  confusion_matrix: true
+  classification_report: true
+  cross_validation_folds: 5
+
+# Prediction parameters
+prediction:
+  batch_size: 32
+  confidence_threshold: 0.7
+
+# Hyperparameter tuning
+hyperparameter_tuning:
+  method: random  # Options: random, grid, bayesian
+  n_trials: 30
+  early_stopping: true
+  cv_folds: 5
+  param_grid:
+    learning_rate:
+      - 1e-2
+      - 1e-3
+      - 1e-4
+    batch_size:
+      - 16
+      - 32
+      - 64
+    hidden_size:
+      - 64
+      - 128
+      - 256
+    dropout_rate:
+      - 0.2
+      - 0.3
+      - 0.5
+    model_architecture:
+      - lstm
+      - bi-lstm
+      - gru
+    embedding_dim:
+      - 64
+      - 100
+      - 200
+
+# Deployment parameters
+deployment:
+  model_version: 1.0.0
+  api_version: v1
+  timeout: 60
+  max_request_size: 1MB
+  rate_limit: 100
+  cache_expiry: 3600

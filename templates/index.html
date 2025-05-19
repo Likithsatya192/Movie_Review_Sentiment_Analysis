@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Review Sentiment Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .glass-card {
+            background: rgba(34, 40, 49, 0.85);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+            border-radius: 2rem;
+            backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            margin-top: 5vh;
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 540px;
+            width: 100%;
+            animation: fadeIn 1.2s cubic-bezier(.4,0,.2,1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .brand-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 0 2px 12px #00000044;
+        }
+        .review-label {
+            color: #bfc9d1;
+            font-weight: 600;
+        }
+        .form-control {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1.5px solid #444;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+        }
+        .form-control:focus {
+            background: rgba(255,255,255,0.13);
+            color: #fff;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem #007bff33;
+        }
+        .btn-analyze {
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 1rem;
+            background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+            border: none;
+            transition: background 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 12px #007bff33;
+        }
+        .btn-analyze:hover {
+            background: linear-gradient(90deg, #0056b3 0%, #00aaff 100%);
+            box-shadow: 0 4px 24px #007bff55;
+        }
+        .examples {
+            margin-top: 1.5rem;
+            color: #bfc9d1;
+            font-size: 0.98rem;
+        }
+        .examples span {
+            background: #232526;
+            color: #fff;
+            border-radius: 0.5rem;
+            padding: 0.2rem 0.7rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .examples span:hover {
+            background: #007bff;
+        }
+        .sentiment-animated {
+            font-size: 2.1rem;
+            font-weight: 700;
+            margin-top: 1.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            animation: popIn 0.7s cubic-bezier(.4,0,.2,1);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            80% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .sentiment-positive {
+            color: #00e676;
+            text-shadow: 0 2px 12px #00e67644;
+        }
+        .sentiment-negative {
+            color: #ff1744;
+            text-shadow: 0 2px 12px #ff174444;
+        }
+        .confidence-badge {
+            font-size: 1.1rem;
+            background: linear-gradient(90deg, #232526 0%, #414345 100%);
+            color: #fff;
+            border-radius: 0.7rem;
+            padding: 0.5rem 1.2rem;
+            margin-top: 0.5rem;
+            box-shadow: 0 2px 8px #00000022;
+        }
+        .icon-anim {
+            animation: bounce 1.2s infinite alternate;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+        .spinner-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(34,40,49,0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            display: none;
+        }
+        .footer {
+            margin-top: auto;
+            background: #232526;
+            color: #fff;
+            text-align: center;
+            padding: 1.2rem 0 0.7rem 0;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="spinner-overlay" id="spinnerOverlay">
+        <div class="spinner-border text-info" style="width: 4rem; height: 4rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+        <div class="glass-card mx-auto">
+            <div class="text-center mb-4">
+                <span style="font-size:2.5rem;vertical-align:middle;">
+                    <svg class="icon-anim" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00c6ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"></path></svg>
+                </span>
+                <span class="brand-title">Movie Review Sentiment</span>
+            </div>
+            <form method="POST" action="/" id="reviewForm" autocomplete="off">
+                <div class="mb-3">
+                    <label for="review" class="form-label review-label">Enter your movie review:</label>
+                    <textarea class="form-control" id="review" name="review" rows="5" required placeholder="Type your review here..."></textarea>
+                </div>
+                <div class="d-grid gap-2 mb-2">
+                    <button type="submit" class="btn btn-analyze btn-lg">Analyze Sentiment</button>
+                </div>
+                <div class="examples">
+                    <span onclick="document.getElementById('review').value='This movie was absolutely fantastic! The acting and story were top-notch.'">Example 1</span>
+                    <span onclick="document.getElementById('review').value='I did not enjoy the film. The plot was boring and predictable.'">Example 2</span>
+                    <span onclick="document.getElementById('review').value='A decent watch, but it could have been much better.'">Example 3</span>
+                </div>
+            </form>
+            {% if prediction %}
+                <div class="sentiment-animated text-center">
+                    {% if prediction == 'Positive' %}
+                        <svg width="36" height="36" fill="none" stroke="#00e676" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/></svg>
+                    {% else %}
+                        <svg width="36" height="36" fill="none" stroke="#ff1744" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><path d="M9 9h.01"/><path d="M15 9h.01"/></svg>
+                    {% endif %}
+                    <span class="{% if prediction == 'Positive' %}sentiment-positive{% else %}sentiment-negative{% endif %}">
+                        {{ prediction }}
+                    </span>
+                </div>
+                <div class="text-center">
+                    <span class="confidence-badge">Confidence: {{ confidence }}%</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="footer">
+        End-to-End Movie Review Sentiment Analysis &copy; 2025 | Powered by Flask &amp; TensorFlow
+    </div>
+    <script>
+        // Show spinner on form submit
+        document.getElementById('reviewForm').addEventListener('submit', function() {
+            document.getElementById('spinnerOverlay').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

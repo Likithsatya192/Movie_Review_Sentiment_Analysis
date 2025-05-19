@@ -5,18 +5,38 @@ data_ingestion:
   source_URL: https://www.kaggle.com/api/v1/datasets/download/atulanandjha/imdb-50k-movie-reviews-test-your-bert
   local_data_file: artifacts/data_ingestion/data.zip
   unzip_dir: artifacts/data_ingestion/data
+  data_file: artifacts/data_ingestion/data/train.csv
 
 data_validation:
   root_dir: artifacts/data_validation
   STATUS_FILE: artifacts/data_validation/status.txt
-  ALL_REQUIRED_FILES: ["train", "test"]
+  ALL_REQUIRED_FILES: ["train.csv"]
 
 data_transformation:
   root_dir: artifacts/data_transformation
   data_path: artifacts/data_ingestion/data
-  tokenizer_name: bert-base-uncased
-  max_length: 128
-  batch_size: 32
+  tokenizer_name: keras
+  max_features: 10000
+  max_len: 200
+  test_size: 0.2
+  text_column: text
+  label_column: sentiment
   train_data_path: artifacts/data_ingestion/data/train.csv
-  test_data_path: artifacts/data_ingestion/data/test.csv
   preprocessing_output: artifacts/data_transformation/preprocessed_data
+
+model_trainer:
+  root_dir: artifacts/model_trainer
+  embedding_dim: 100
+  model_type: lstm
+  batch_size: 64
+  epochs: 20
+  learning_rate: 1e-4
+  model_output_path: artifacts/model_trainer/model.h5
+  tokenizer_output_path: artifacts/model_trainer/tokenizer.pickle
+
+model_evaluation:
+  root_dir: artifacts/model_evaluation
+  test_data_path: artifacts/data_ingestion/data/train.csv
+  tokenization_path: artifacts/model_trainer/tokenizer.pickle
+  model_path: artifacts/model_trainer/model.h5
+  metric_file_name: artifacts/model_evaluation/metrics.json
